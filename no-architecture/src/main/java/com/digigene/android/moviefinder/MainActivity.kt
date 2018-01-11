@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
             holder.itemView.item_textView.text = "${mList[position].year}: ${mList[position].title}"
-            holder.itemView.setOnClickListener { onClick }
+            holder.itemView.setOnClickListener { onClick(mList[position]) }
         }
 
         override fun getItemCount(): Int {

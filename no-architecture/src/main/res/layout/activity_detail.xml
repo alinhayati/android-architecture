@@ -19,7 +19,6 @@
         android:id="@+id/detail_rating"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
         android:padding="8dp"
         app:layout_constraintStart_toStartOf="@id/detail_title"
         app:layout_constraintTop_toBottomOf="@id/detail_title" />
@@ -28,7 +27,6 @@
         android:id="@+id/detail_date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
         android:padding="8dp"
         app:layout_constraintStart_toStartOf="@id/detail_title"
         app:layout_constraintTop_toBottomOf="@id/detail_rating"  />
@@ -37,7 +35,6 @@
         android:id="@+id/detail_year"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
         android:padding="8dp"
         app:layout_constraintStart_toStartOf="@id/detail_title"
         app:layout_constraintTop_toBottomOf="@id/detail_date"  />
