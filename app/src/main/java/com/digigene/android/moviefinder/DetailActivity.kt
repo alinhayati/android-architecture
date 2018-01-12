@@ -13,5 +13,6 @@ class DetailActivity : AppCompatActivity() {
         detail_title.text = "${MainActivity.Constants.TITLE.capitalize()}: ${bundle.getString(MainActivity.Constants.TITLE)}"
         detail_year.text = "${MainActivity.Constants.YEAR.capitalize()}: ${bundle.getString(MainActivity.Constants.YEAR)}"
         detail_date.text = "${MainActivity.Constants.DATE.capitalize()}: ${bundle.getString(MainActivity.Constants.DATE)}"
+        detail_back.setOnClickListener { onBackPressed() }
     }
 }
