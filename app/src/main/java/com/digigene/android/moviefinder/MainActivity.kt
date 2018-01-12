@@ -30,7 +30,6 @@ import retrofit2.http.Query
 
 class MainActivity : AppCompatActivity() {
     object Constants {
-        const val MOVIE_INFO = "movie_info"
         const val RATING = "rating"
         const val TITLE = "title"
         const val YEAR = "year"
@@ -42,23 +41,28 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        addressAdapter = AddressAdapter(onClick = { item ->
-            var bundle = Bundle()
-            bundle.putString(RATING, item.rating)
-            bundle.putString(TITLE, item.title)
-            bundle.putString(YEAR, item.year)
-            bundle.putString(DATE, item.date)
-            var intent = Intent(this, DetailActivity::class.java)
-            intent.putExtras(bundle)
-            startActivity(intent)
-        })
-        main_activity_recyclerView.adapter = addressAdapter
+        loadView()
         respondToClicks()
+    }
+
+    private fun loadView() {
+        setContentView(R.layout.activity_main)
+        addressAdapter = AddressAdapter()
+        main_activity_recyclerView.adapter = addressAdapter
     }
 
     private fun respondToClicks() {
         main_activity_button.setOnClickListener({ findAddress(main_activity_editText.text.toString()) })
+        addressAdapter whenItsItemIsClicked {
+            var bundle = Bundle()
+            bundle.putString(RATING, it.rating)
+            bundle.putString(TITLE, it.title)
+            bundle.putString(YEAR, it.year)
+            bundle.putString(DATE, it.date)
+            var intent = Intent(this, DetailActivity::class.java)
+            intent.putExtras(bundle)
+            startActivity(intent)
+        }
     }
 
     override fun onResume() {
@@ -82,7 +86,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onError(e: Throwable) {
                 main_activity_progress_bar.visibility = View.GONE
-                Toast.makeText(this@MainActivity, "Error retrieving data: ${e.message}", Toast.LENGTH_SHORT)
+                Toast.makeText(this@MainActivity, "Error retrieving data: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         })
         compositeDisposable.add(disposable)
@@ -106,9 +110,9 @@ class MainActivity : AppCompatActivity() {
         addressAdapter.notifyDataSetChanged()
     }
 
-    class AddressAdapter(val onClick: (item: ResultEntity) -> Unit) : RecyclerView.Adapter<AddressAdapter.Holder>() {
+    class AddressAdapter() : RecyclerView.Adapter<AddressAdapter.Holder>() {
         var mList: List<ResultEntity> = arrayListOf()
-
+        private lateinit var mOnClick: (item: ResultEntity) -> Unit
 
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): Holder {
             val view = LayoutInflater.from(parent!!.context).inflate(R.layout.item, parent, false)
@@ -117,11 +121,15 @@ class MainActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
             holder.itemView.item_textView.text = "${mList[position].year}: ${mList[position].title}"
-            holder.itemView.setOnClickListener { onClick(mList[position]) }
+            holder.itemView.setOnClickListener { mOnClick(mList[position]) }
         }
 
         override fun getItemCount(): Int {
             return mList.size
+        }
+
+        infix fun whenItsItemIsClicked(onClick: (item: ResultEntity) -> Unit) {
+            this.mOnClick = onClick
         }
 
         fun updateList(list: List<ResultEntity>) {
