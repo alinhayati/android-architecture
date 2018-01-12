@@ -30,7 +30,6 @@ import retrofit2.http.Query
 
 class MainActivity : AppCompatActivity() {
     object Constants {
-        const val MOVIE_INFO = "movie_info"
         const val RATING = "rating"
         const val TITLE = "title"
         const val YEAR = "year"
@@ -82,7 +81,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onError(e: Throwable) {
                 main_activity_progress_bar.visibility = View.GONE
-                Toast.makeText(this@MainActivity, "Error retrieving data: ${e.message}", Toast.LENGTH_SHORT)
+                Toast.makeText(this@MainActivity, "Error retrieving data: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         })
         compositeDisposable.add(disposable)
