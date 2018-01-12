@@ -12,6 +12,7 @@ import com.digigene.android.moviefinder.MainActivity.Constants.DATE
 import com.digigene.android.moviefinder.MainActivity.Constants.RATING
 import com.digigene.android.moviefinder.MainActivity.Constants.TITLE
 import com.digigene.android.moviefinder.MainActivity.Constants.YEAR
+import com.digigene.android.moviefinder.presenter.MainPresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -36,11 +37,13 @@ class MainActivity : AppCompatActivity() {
         const val DATE = "date"
     }
 
-    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private lateinit var mainPresenter: MainPresenter
     private lateinit var addressAdapter: AddressAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainPresenter = MainPresenter()
+        mainPresenter hasView this
         loadView()
         respondToClicks()
     }
@@ -52,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun respondToClicks() {
-        main_activity_button.setOnClickListener({ findAddress(main_activity_editText.text.toString()) })
+        main_activity_button.setOnClickListener({ mainPresenter.findAddress(main_activity_editText.text.toString()) })
         addressAdapter whenItsItemIsClicked {
             var bundle = Bundle()
             bundle.putString(RATING, it.rating)
@@ -68,28 +71,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         hideProgressBar()
-    }
-
-    private fun findAddress(address: String) {
-        val disposable: Disposable = fetchAddress(address)!!.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableObserver<List<ResultEntity>?>() {
-            override fun onNext(t: List<ResultEntity>) {
-                hideProgressBar()
-                updateRecyclerView(t)
-            }
-
-            override fun onStart() {
-                showProgressBar()
-            }
-
-            override fun onComplete() {
-            }
-
-            override fun onError(e: Throwable) {
-                main_activity_progress_bar.visibility = View.GONE
-                Toast.makeText(this@MainActivity, "Error retrieving data: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-        compositeDisposable.add(disposable)
     }
 
     private fun showProgressBar() {
@@ -139,23 +120,4 @@ class MainActivity : AppCompatActivity() {
         class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView)
     }
 
-
-    private var mRetrofit: Retrofit? = null
-
-    private fun fetchAddress(address: String): Observable<List<ResultEntity>>? {
-        if (mRetrofit == null) {
-            val loggingInterceptor = HttpLoggingInterceptor()
-            loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-            val client = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
-            mRetrofit = Retrofit.Builder().baseUrl("http://bechdeltest.com/api/v1/").addConverterFactory(GsonConverterFactory.create()).addCallAdapterFactory(RxJava2CallAdapterFactory.create()).client(client).build()
-        }
-        return mRetrofit?.create(AddressService::class.java)?.fetchLocationFromServer(address)
-    }
-
-    interface AddressService {
-        @GET("getMoviesByTitle")
-        fun fetchLocationFromServer(@Query("title") title: String): Observable<List<ResultEntity>>
-    }
-
-    class ResultEntity(val title: String, val rating: String, val date: String, val year: String)
 }
