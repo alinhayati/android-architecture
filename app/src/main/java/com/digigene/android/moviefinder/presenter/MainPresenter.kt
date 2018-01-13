@@ -1,40 +1,37 @@
 package com.digigene.android.moviefinder.presenter
 
+import android.content.Intent
+import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import com.digigene.android.moviefinder.DetailActivity
 import com.digigene.android.moviefinder.MainActivity
-import io.reactivex.Observable
+import com.digigene.android.moviefinder.model.MainModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Query
 
 class MainPresenter {
     private lateinit var mainView: MainActivity
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private val mainModel: MainModel = MainModel()
 
     infix fun hasView(mainActivity: MainActivity) {
         mainView = mainActivity
     }
 
     fun findAddress(address: String) {
-        val disposable: Disposable = fetchAddress(address)!!.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableObserver<List<ResultEntity>?>() {
-            override fun onNext(t: List<ResultEntity>) {
+        val disposable: Disposable = mainModel.fetchAddress(address)!!.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableObserver<List<MainModel.ResultEntity>?>() {
+            override fun onNext(t: List<MainModel.ResultEntity>) {
                 mainView.hideProgressBar()
-                updateRecyclerView(t)
+                mainView.updateMovieList(t)
             }
 
             override fun onStart() {
-                showProgressBar()
+                mainView.showProgressBar()
             }
 
             override fun onComplete() {
@@ -48,25 +45,19 @@ class MainPresenter {
         compositeDisposable.add(disposable)
     }
 
-    private fun fetchAddress(address: String): Observable<List<ResultEntity>>? {
-        if (mRetrofit == null) {
-            val loggingInterceptor = HttpLoggingInterceptor()
-            loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-            val client = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
-            mRetrofit = Retrofit.Builder().baseUrl("http://bechdeltest.com/api/v1/").addConverterFactory(GsonConverterFactory.create()).addCallAdapterFactory(RxJava2CallAdapterFactory.create()).client(client).build()
-        }
-        return mRetrofit?.create(AddressService::class.java)?.fetchLocationFromServer(address)
+    infix fun doWhenClickIsMadeOn(item: MainModel.ResultEntity) {
+        var bundle = Bundle()
+        bundle.putString(DetailActivity.Constants.RATING, item.rating)
+        bundle.putString(DetailActivity.Constants.TITLE, item.title)
+        bundle.putString(DetailActivity.Constants.YEAR, item.year)
+        bundle.putString(DetailActivity.Constants.DATE, item.date)
+        var intent = Intent(mainView, DetailActivity::class.java)
+        intent.putExtras(bundle)
+        mainView.startActivity(intent)
     }
 
-
-    private var mRetrofit: Retrofit? = null
-
-
-    interface AddressService {
-        @GET("getMoviesByTitle")
-        fun fetchLocationFromServer(@Query("title") title: String): Observable<List<ResultEntity>>
+    fun onStop() {
+        compositeDisposable.clear()
     }
-
-    class ResultEntity(val title: String, val rating: String, val date: String, val year: String)
 
 }
