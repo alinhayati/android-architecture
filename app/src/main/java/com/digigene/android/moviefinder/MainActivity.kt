@@ -6,20 +6,20 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.digigene.android.moviefinder.controller.MainController
 import com.digigene.android.moviefinder.model.MainModel
-import com.digigene.android.moviefinder.presenter.MainPresenter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item.view.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var mainPresenter: MainPresenter
+    private lateinit var mMainController: MainController
     private lateinit var addressAdapter: AddressAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainPresenter = MainPresenter()
-        mainPresenter hasView this
+        mMainController = MainController()
+        mMainController hasView this
         loadView()
         respondToClicks()
     }
@@ -31,10 +31,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun respondToClicks() {
-        main_activity_button.setOnClickListener({ mainPresenter.findAddress(main_activity_editText.text.toString()) })
-        addressAdapter whenItemIsClicked {
-            mainPresenter doWhenClickIsMadeOn it
+        main_activity_button.setOnClickListener({ mMainController.findAddress(main_activity_editText.text.toString()) })
+        addressAdapter setItemClickMethod {
+            mMainController doWhenClickIsMadeOn it
         }
+        addressAdapter.setItemShowMethod { fetchItemText(it) }
+    }
+
+    fun fetchItemText(it: MainModel.ResultEntity): String {
+        return "${it.year}: ${it.title}"
     }
 
     override fun onResume() {
@@ -52,7 +57,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        mainPresenter.onStop()
+        mMainController.onStop()
     }
 
     fun updateMovieList(t: List<MainModel.ResultEntity>) {
@@ -63,6 +68,7 @@ class MainActivity : AppCompatActivity() {
     class AddressAdapter : RecyclerView.Adapter<AddressAdapter.Holder>() {
         var mList: List<MainModel.ResultEntity> = arrayListOf()
         private lateinit var mOnClick: (item: MainModel.ResultEntity) -> Unit
+        private lateinit var mOnShowItem: (item: MainModel.ResultEntity) -> String
 
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): Holder {
             val view = LayoutInflater.from(parent!!.context).inflate(R.layout.item, parent, false)
@@ -70,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
-            holder.itemView.item_textView.text = "${mList[position].year}: ${mList[position].title}"
+            holder.itemView.item_textView.text = mOnShowItem(mList[position])
             holder.itemView.setOnClickListener { mOnClick(mList[position]) }
         }
 
@@ -78,8 +84,12 @@ class MainActivity : AppCompatActivity() {
             return mList.size
         }
 
-        infix fun whenItemIsClicked(onClick: (item: MainModel.ResultEntity) -> Unit) {
+        infix fun setItemClickMethod(onClick: (item: MainModel.ResultEntity) -> Unit) {
             this.mOnClick = onClick
+        }
+
+        infix fun setItemShowMethod(onShowItem: (item: MainModel.ResultEntity) -> String) {
+            this.mOnShowItem = onShowItem
         }
 
         fun updateList(list: List<MainModel.ResultEntity>) {

@@ -1,4 +1,4 @@
-package com.digigene.android.moviefinder.presenter
+package com.digigene.android.moviefinder.controller
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,7 +14,7 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainPresenter {
+class MainController {
     private lateinit var mainView: MainActivity
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val mainModel: MainModel = MainModel()
