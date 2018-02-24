@@ -46,11 +46,6 @@ class MainActivity : AppCompatActivity() {
         return "${it.year}: ${it.title}"
     }
 
-    override fun onResume() {
-        super.onResume()
-        hideProgressBar()
-    }
-
     fun showProgressBar() {
         main_activity_progress_bar.visibility = View.VISIBLE
     }
