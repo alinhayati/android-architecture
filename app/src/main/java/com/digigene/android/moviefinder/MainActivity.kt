@@ -6,20 +6,20 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.digigene.android.moviefinder.controller.MainController
+import com.digigene.android.moviefinder.presenter.MainPresenter
 import com.digigene.android.moviefinder.model.MainModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item.view.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var mMainController: MainController
+    private lateinit var mMainPresenter: MainPresenter
     private lateinit var addressAdapter: AddressAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mMainController = MainController()
-        mMainController hasView this
+        mMainPresenter = MainPresenter()
+        mMainPresenter hasView this
         loadView()
         respondToClicks()
     }
@@ -31,15 +31,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun respondToClicks() {
-        main_activity_button.setOnClickListener({ mMainController.findAddress(main_activity_editText.text.toString()) })
+        main_activity_button.setOnClickListener({ mMainPresenter.findAddress(main_activity_editText.text.toString()) })
         addressAdapter setItemClickMethod {
-            mMainController doWhenClickIsMadeOn it
+            mMainPresenter doWhenClickIsMadeOn it
         }
-        addressAdapter.setItemShowMethod { fetchItemText(it) }
-    }
-
-    fun fetchItemText(it: MainModel.ResultEntity): String {
-        return "${it.year}: ${it.title}"
+        addressAdapter.setItemShowMethod { mMainPresenter fetchItemTextFrom it }
     }
 
     override fun onResume() {
@@ -57,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        mMainController.onStop()
+        mMainPresenter.onStop()
     }
 
     fun updateMovieList(t: List<MainModel.ResultEntity>) {

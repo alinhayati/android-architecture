@@ -1,4 +1,4 @@
-package com.digigene.android.moviefinder.controller
+package com.digigene.android.moviefinder.presenter
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,7 +14,7 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainController {
+class MainPresenter {
     private lateinit var mainView: MainActivity
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val mainModel: MainModel = MainModel()
@@ -54,6 +54,10 @@ class MainController {
         var intent = Intent(mainView, DetailActivity::class.java)
         intent.putExtras(bundle)
         mainView.startActivity(intent)
+    }
+
+    infix fun fetchItemTextFrom(it: MainModel.ResultEntity): String {
+        return "${it.year}: ${it.title}"
     }
 
     fun onStop() {
