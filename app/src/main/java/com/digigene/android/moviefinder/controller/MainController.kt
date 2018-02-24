@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainController {
     private lateinit var mainView: MainActivity
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private val mainModel: MainModel = MainModel()
+    private val mainModel: MainModel = MainModel(this)
 
     infix fun hasView(mainActivity: MainActivity) {
         mainView = mainActivity
@@ -26,6 +26,10 @@ class MainController {
     fun findAddress(address: String) {
         val disposable: Disposable = mainModel.fetchAddress(address)!!.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableObserver<List<MainModel.ResultEntity>?>() {
             override fun onNext(t: List<MainModel.ResultEntity>) {
+                mainModel.
+                mainView.notifyToGetTheDataFromTheModel()
+
+
                 mainView.hideProgressBar()
                 mainView.updateMovieList(t)
             }
@@ -58,6 +62,10 @@ class MainController {
 
     fun onStop() {
         compositeDisposable.clear()
+    }
+
+    fun notifyItThatTheListIsReady() {
+        mainView.notifyToGetTheListFromTheModel()
     }
 
 }

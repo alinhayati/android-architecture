@@ -14,12 +14,14 @@ import kotlinx.android.synthetic.main.item.view.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mMainController: MainController
+    private lateinit var mMainModel: MainModel
     private lateinit var addressAdapter: AddressAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mMainController = MainController()
         mMainController hasView this
+        mMainModel = MainModel(mMainController)
         loadView()
         respondToClicks()
     }
@@ -97,6 +99,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView)
+    }
+
+    fun notifyToGetTheListFromTheModel() {
+        hideProgressBar()
+        updateMovieList(mMa)
     }
 
 }

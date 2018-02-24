@@ -1,6 +1,13 @@
 package com.digigene.android.moviefinder.model
 
+import android.view.View
+import android.widget.Toast
+import com.digigene.android.moviefinder.controller.MainController
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.observers.DisposableObserver
+import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -9,8 +16,34 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-class MainModel {
+class MainModel(val controller: MainController) {
     private var mRetrofit: Retrofit? = null
+
+    lateinit var mList: List<ResultEntity>
+
+    fun findAddress(address: String) {
+        val disposable: Disposable = fetchAddress(address)!!.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableObserver<List<ResultEntity>?>() {
+            override fun onNext(t: List<MainModel.ResultEntity>) {
+                mList = t
+                controller.notifyItThatTheListIsReady()
+
+
+            }
+
+            override fun onStart() {
+                mainView.showProgressBar()
+            }
+
+            override fun onComplete() {
+            }
+
+            override fun onError(e: Throwable) {
+                mainView.main_activity_progress_bar.visibility = View.GONE
+                Toast.makeText(mainView, "Error retrieving data: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+        compositeDisposable.add(disposable)
+    }
 
     fun fetchAddress(address: String): Observable<List<MainModel.ResultEntity>>? {
         if (mRetrofit == null) {
