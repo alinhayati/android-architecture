@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.digigene.android.moviefinder.controller.MainController
 import com.digigene.android.moviefinder.model.MainModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -20,8 +21,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mMainController = MainController()
-        mMainController hasView this
         mMainModel = MainModel(mMainController)
+        mMainController hasView this
+        mMainController hasModel mMainModel
         loadView()
         respondToClicks()
     }
@@ -103,7 +105,16 @@ class MainActivity : AppCompatActivity() {
 
     fun notifyToGetTheListFromTheModel() {
         hideProgressBar()
-        updateMovieList(mMa)
+        updateMovieList(mMainModel.mList)
+    }
+
+    fun notifyToGetTheErrorFromTheModel() {
+        main_activity_progress_bar.visibility = View.GONE
+        Toast.makeText(this, "Error retrieving data: ${mMainModel.httpException.message}", Toast.LENGTH_SHORT).show()
+    }
+
+    fun notifyTheListIsAboutToStartLoading() {
+        showProgressBar()
     }
 
 }

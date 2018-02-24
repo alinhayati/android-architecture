@@ -2,51 +2,21 @@ package com.digigene.android.moviefinder.controller
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
 import com.digigene.android.moviefinder.DetailActivity
 import com.digigene.android.moviefinder.MainActivity
 import com.digigene.android.moviefinder.model.MainModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.observers.DisposableObserver
-import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainController {
     private lateinit var mainView: MainActivity
-    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private val mainModel: MainModel = MainModel(this)
+    private lateinit var mainModel: MainModel
 
     infix fun hasView(mainActivity: MainActivity) {
         mainView = mainActivity
     }
 
     fun findAddress(address: String) {
-        val disposable: Disposable = mainModel.fetchAddress(address)!!.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableObserver<List<MainModel.ResultEntity>?>() {
-            override fun onNext(t: List<MainModel.ResultEntity>) {
-                mainModel.
-                mainView.notifyToGetTheDataFromTheModel()
-
-
-                mainView.hideProgressBar()
-                mainView.updateMovieList(t)
-            }
-
-            override fun onStart() {
-                mainView.showProgressBar()
-            }
-
-            override fun onComplete() {
-            }
-
-            override fun onError(e: Throwable) {
-                mainView.main_activity_progress_bar.visibility = View.GONE
-                Toast.makeText(mainView, "Error retrieving data: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-        compositeDisposable.add(disposable)
+        mainView.notifyTheListIsAboutToStartLoading()
+        mainModel.findAddress(address)
     }
 
     infix fun doWhenClickIsMadeOn(item: MainModel.ResultEntity) {
@@ -61,11 +31,19 @@ class MainController {
     }
 
     fun onStop() {
-        compositeDisposable.clear()
+        mainModel.stopLoadingTheList()
     }
 
-    fun notifyItThatTheListIsReady() {
+    fun notifyTheListIsReady() {
         mainView.notifyToGetTheListFromTheModel()
+    }
+
+    fun notifyThereIsErrorGettingTheList() {
+        mainView.notifyToGetTheErrorFromTheModel()
+    }
+
+    infix fun hasModel(mainModel: MainModel) {
+        this.mainModel = mainModel
     }
 
 }
