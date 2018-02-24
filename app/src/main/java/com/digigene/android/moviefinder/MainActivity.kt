@@ -38,11 +38,6 @@ class MainActivity : AppCompatActivity() {
         addressAdapter.setItemShowMethod { mMainPresenter fetchItemTextFrom it }
     }
 
-    override fun onResume() {
-        super.onResume()
-        hideProgressBar()
-    }
-
     fun showProgressBar() {
         main_activity_progress_bar.visibility = View.VISIBLE
     }
