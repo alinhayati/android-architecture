@@ -1,12 +1,11 @@
 package com.digigene.android.moviefinder.model
 
+import com.digigene.android.moviefinder.SchedulersWrapper
 import com.digigene.android.moviefinder.controller.MainController
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableSingleObserver
-import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
@@ -21,9 +20,10 @@ class MainModel(val controller: MainController) {
     var mList = listOf<ResultEntity>()
     lateinit var httpException: HttpException
     private var compositeDisposable = CompositeDisposable()
+    private var schedulersWrapper = SchedulersWrapper()
 
     fun findAddress(address: String) {
-        val disposable: Disposable = fetchAddress(address)!!.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableSingleObserver<List<ResultEntity>?>() {
+        val disposable: Disposable = fetchAddress(address)!!.subscribeOn(schedulersWrapper.io()).observeOn(schedulersWrapper.main()).subscribeWith(object : DisposableSingleObserver<List<ResultEntity>?>() {
             override fun onSuccess(t: List<ResultEntity>) {
                 mList = t
                 controller.notifyTheListIsReady()
