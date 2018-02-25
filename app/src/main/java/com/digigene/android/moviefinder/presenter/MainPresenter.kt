@@ -10,7 +10,7 @@ import com.digigene.android.moviefinder.model.MainModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.observers.DisposableObserver
+import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -24,17 +24,14 @@ class MainPresenter {
     }
 
     fun findAddress(address: String) {
-        val disposable: Disposable = mainModel.fetchAddress(address)!!.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableObserver<List<MainModel.ResultEntity>?>() {
-            override fun onNext(t: List<MainModel.ResultEntity>) {
+        val disposable: Disposable = mainModel.fetchAddress(address)!!.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableSingleObserver<List<MainModel.ResultEntity>?>() {
+            override fun onSuccess(t: List<MainModel.ResultEntity>) {
                 mainView.hideProgressBar()
                 mainView.updateMovieList(t)
             }
 
             override fun onStart() {
                 mainView.showProgressBar()
-            }
-
-            override fun onComplete() {
             }
 
             override fun onError(e: Throwable) {
