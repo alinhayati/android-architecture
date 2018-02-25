@@ -1,11 +1,11 @@
 package com.digigene.android.moviefinder.model
 
 import com.digigene.android.moviefinder.controller.MainController
-import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.observers.DisposableObserver
+import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -23,8 +23,8 @@ class MainModel(val controller: MainController) {
     private var compositeDisposable = CompositeDisposable()
 
     fun findAddress(address: String) {
-        val disposable: Disposable = fetchAddress(address)!!.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableObserver<List<ResultEntity>?>() {
-            override fun onNext(t: List<MainModel.ResultEntity>) {
+        val disposable: Disposable = fetchAddress(address)!!.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableSingleObserver<List<ResultEntity>?>() {
+            override fun onSuccess(t: List<ResultEntity>) {
                 mList = t
                 controller.notifyTheListIsReady()
             }
@@ -33,14 +33,11 @@ class MainModel(val controller: MainController) {
                 httpException = e as HttpException
                 controller.notifyThereIsErrorGettingTheList()
             }
-
-            override fun onComplete() {
-            }
         })
         compositeDisposable.add(disposable)
     }
 
-    fun fetchAddress(address: String): Observable<List<MainModel.ResultEntity>>? {
+    fun fetchAddress(address: String): Single<List<MainModel.ResultEntity>>? {
         if (mRetrofit == null) {
             val loggingInterceptor = HttpLoggingInterceptor()
             loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -53,7 +50,7 @@ class MainModel(val controller: MainController) {
     class ResultEntity(val title: String, val rating: String, val date: String, val year: String)
     interface AddressService {
         @GET("getMoviesByTitle")
-        fun fetchLocationFromServer(@Query("title") title: String): Observable<List<ResultEntity>>
+        fun fetchLocationFromServer(@Query("title") title: String): Single<List<ResultEntity>>
     }
 
     fun stopLoadingTheList() {
