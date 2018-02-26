@@ -38,8 +38,9 @@ class MainControllerTest {
         var testObservable = Single.just(listOf<MainModel.ResultEntity>())
         doReturn(testObservable).`when`(mainModel).fetchAddress(any())
         doNothing().`when`(mainView).notifyTheListIsAboutToStartLoading()
+        mainModel.fetchAddress("whasdfj")!!.test()
         mainController.findAddress("some")
-        verify(mainView).notifyTheListIsAboutToStartLoading()
+//        verify(mainView).notifyTheListIsAboutToStartLoading()
         verify(mainView).notifyToGetTheListFromTheModel()
 
 
