@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun notifyToGetTheErrorFromTheModel() {
-        main_activity_progress_bar.visibility = View.GONE
+        hideProgressBar()
         Toast.makeText(this, "Error retrieving data: ${mMainModel.httpException.message}", Toast.LENGTH_SHORT).show()
     }
 
