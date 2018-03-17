@@ -1,5 +1,6 @@
 package com.digigene.android.moviefinder
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
@@ -46,6 +47,24 @@ class MainActivity : AppCompatActivity() {
         return "${it.year}: ${it.title}"
     }
 
+    override fun onStop() {
+        super.onStop()
+        mMainController.onStop()
+    }
+
+    private fun updateMovieList(t: List<MainModel.ResultEntity>) {
+        addressAdapter.updateList(t)
+        addressAdapter.notifyDataSetChanged()
+    }
+
+    fun showResult() {
+        updateMovieList(mMainModel.mList)
+    }
+
+    fun showError() {
+        showToast(this, getString(R.string.error_getting_results, mMainModel.httpException.message))
+    }
+
     fun showProgressBar() {
         main_activity_progress_bar.visibility = View.VISIBLE
     }
@@ -54,14 +73,8 @@ class MainActivity : AppCompatActivity() {
         main_activity_progress_bar.visibility = View.GONE
     }
 
-    override fun onStop() {
-        super.onStop()
-        mMainController.onStop()
-    }
-
-    fun updateMovieList(t: List<MainModel.ResultEntity>) {
-        addressAdapter.updateList(t)
-        addressAdapter.notifyDataSetChanged()
+    private fun showToast(context: Context, msg: String) {
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
     }
 
     class AddressAdapter : RecyclerView.Adapter<AddressAdapter.Holder>() {
@@ -96,20 +109,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView)
-    }
-
-    fun notifyToGetTheListFromTheModel() {
-        hideProgressBar()
-        updateMovieList(mMainModel.mList)
-    }
-
-    fun notifyToGetTheErrorFromTheModel() {
-        hideProgressBar()
-        Toast.makeText(this, "Error retrieving data: ${mMainModel.httpException.message}", Toast.LENGTH_SHORT).show()
-    }
-
-    fun notifyTheListIsAboutToStartLoading() {
-        showProgressBar()
     }
 
 }

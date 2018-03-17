@@ -26,15 +26,19 @@ class MainModel(val controller: MainController) {
         val disposable: Disposable = fetchAddress(address)!!.subscribeOn(schedulersWrapper.io()).observeOn(schedulersWrapper.main()).subscribeWith(object : DisposableSingleObserver<List<ResultEntity>?>() {
             override fun onSuccess(t: List<ResultEntity>) {
                 mList = t
-                controller.notifyTheListIsReady()
+                controller.doWhenResultIsReady()
             }
 
             override fun onError(e: Throwable) {
                 httpException = e as HttpException
-                controller.notifyThereIsErrorGettingTheList()
+                controller.doWhenThereIsErrorFetchingTheResult()
             }
         })
         compositeDisposable.add(disposable)
+    }
+
+    fun stopLoadingTheList() {
+        compositeDisposable.clear()
     }
 
     fun fetchAddress(address: String): Single<List<MainModel.ResultEntity>>? {
@@ -44,16 +48,13 @@ class MainModel(val controller: MainController) {
             val client = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
             mRetrofit = Retrofit.Builder().baseUrl("http://bechdeltest.com/api/v1/").addConverterFactory(GsonConverterFactory.create()).addCallAdapterFactory(RxJava2CallAdapterFactory.create()).client(client).build()
         }
-        return mRetrofit?.create(MainModel.AddressService::class.java)?.fetchLocationFromServer(address)
+        return mRetrofit?.create(MainModel.AddressService::class.java)?.fetchMoviesByTitle(address)
     }
 
     class ResultEntity(val title: String, val rating: String, val date: String, val year: String)
     interface AddressService {
         @GET("getMoviesByTitle")
-        fun fetchLocationFromServer(@Query("title") title: String): Single<List<ResultEntity>>
-    }
+        fun fetchMoviesByTitle(@Query("title") title: String): Single<List<ResultEntity>>
 
-    fun stopLoadingTheList() {
-        compositeDisposable.clear()
     }
 }

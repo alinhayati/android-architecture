@@ -15,7 +15,7 @@ class MainController {
     }
 
     fun findAddress(address: String) {
-        mainView.notifyTheListIsAboutToStartLoading()
+        mainView.showProgressBar()
         mainModel.findAddress(address)
     }
 
@@ -34,12 +34,14 @@ class MainController {
         mainModel.stopLoadingTheList()
     }
 
-    fun notifyTheListIsReady() {
-        mainView.notifyToGetTheListFromTheModel()
+    fun doWhenResultIsReady() {
+        mainView.hideProgressBar()
+        mainView.showResult()
     }
 
-    fun notifyThereIsErrorGettingTheList() {
-        mainView.notifyToGetTheErrorFromTheModel()
+    fun doWhenThereIsErrorFetchingTheResult() {
+        mainView.hideProgressBar()
+        mainView.showError()
     }
 
     infix fun hasModel(mainModel: MainModel) {

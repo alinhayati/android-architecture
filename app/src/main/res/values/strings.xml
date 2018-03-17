@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Movie Finder</string>
+    <string name="error_getting_results">Error getting results: %s</string>
 </resources>
