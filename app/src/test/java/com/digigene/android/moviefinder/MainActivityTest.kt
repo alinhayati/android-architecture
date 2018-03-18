@@ -28,8 +28,9 @@ class MainActivityTest {
 
     @Test
     fun fetchItemText() {
-        val text = mMainView.fetchItemText(MainModel.ResultEntity("a movie title", "a rating", "a date", "a year"))
-        assertThat(text, equalTo("a year: a movie title"))
+        val resultEntity = MainModel.ResultEntity("a movie title", "a rating", "a date", "a year")
+        val formattedText = mMainView.fetchItemText(resultEntity)
+        assertThat(formattedText, equalTo("${resultEntity.year}: ${resultEntity.title}"))
     }
 
     @Test
