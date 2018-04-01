@@ -42,4 +42,6 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.1.0'
     // testing library
     testImplementation "com.nhaarman:mockito-kotlin:1.5.0"
+    //easymvp
+    implementation 'com.digigene.android:easy-mvp:0.2.1'
 }

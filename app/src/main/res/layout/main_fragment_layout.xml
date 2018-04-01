@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.digigene.android.moviefinder.MainActivity">
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/main_toolbar"
@@ -28,7 +26,7 @@
     </android.support.v7.widget.Toolbar>
 
     <EditText
-        android:id="@+id/main_activity_editText"
+        android:id="@+id/main_fragment_editText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -41,7 +39,7 @@
         app:layout_constraintTop_toBottomOf="@id/main_toolbar" />
 
     <Button
-        android:id="@+id/main_activity_button"
+        android:id="@+id/main_fragment_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -51,10 +49,10 @@
         android:textSize="20sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/main_activity_editText" />
+        app:layout_constraintTop_toBottomOf="@id/main_fragment_editText" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/main_activity_recyclerView"
+        android:id="@+id/main_fragment_recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="16dp"
@@ -65,16 +63,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/main_activity_button" />
+        app:layout_constraintTop_toBottomOf="@id/main_fragment_button" />
 
     <ProgressBar
-        android:id="@+id/main_activity_progress_bar"
+        android:id="@+id/main_fragment_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/main_activity_button" />
+        app:layout_constraintTop_toBottomOf="@id/main_fragment_button" />
 
 </android.support.constraint.ConstraintLayout>
