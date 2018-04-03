@@ -16,7 +16,7 @@ import org.mockito.MockitoAnnotations
 import retrofit2.HttpException
 import retrofit2.Response
 
-class MainPresenterTestÅ {
+class MainPresenterTest {
     @InjectMocks
     private lateinit var mainPresenter: MainPresenter
     @Mock
