@@ -6,8 +6,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.digigene.android.moviefinder.presenter.MainPresenter
+import android.widget.Toast
 import com.digigene.android.moviefinder.model.MainModel
+import com.digigene.android.moviefinder.presenter.MainPresenter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item.view.*
 
@@ -18,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mMainPresenter = MainPresenter()
+        mMainPresenter = MainPresenter(MainModel())
         mMainPresenter hasView this
         loadView()
         respondToClicks()
@@ -44,6 +45,10 @@ class MainActivity : AppCompatActivity() {
 
     fun hideProgressBar() {
         main_activity_progress_bar.visibility = View.GONE
+    }
+
+    fun showErrorMessage(errorMsg: String) {
+        Toast.makeText(this, "Error retrieving data: $errorMsg", Toast.LENGTH_SHORT).show()
     }
 
     override fun onStop() {
