@@ -4,7 +4,7 @@ import com.digigene.android.moviefinder.MainActivity
 import com.digigene.android.moviefinder.model.MainModel
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.inOrder
 import io.reactivex.Single
 import okhttp3.MediaType
 import okhttp3.ResponseBody
@@ -37,8 +37,10 @@ class MainPresenterTest {
         val observable = Single.just(dummyResult)
         doReturn(observable).`when`(mainModel).fetchAddress(address)
         mainPresenter.findAddress(address)
-        verify(mainView).hideProgressBar()
-        verify(mainView).updateMovieList(dummyResult)
+        val inOrder = inOrder(mainView, mainView, mainView)
+        inOrder.verify(mainView).showProgressBar()
+        inOrder.verify(mainView).hideProgressBar()
+        inOrder.verify(mainView).updateMovieList(dummyResult)
     }
 
     @Test
@@ -48,8 +50,10 @@ class MainPresenterTest {
         val observable = Single.error<Response<HttpException>>(error)
         doReturn(observable).`when`(mainModel).fetchAddress(address)
         mainPresenter.findAddress(address)
-        verify(mainView).hideProgressBar()
-        verify(mainView).showErrorMessage(any())
+        val inOrder = inOrder(mainView, mainView, mainView)
+        inOrder.verify(mainView).showProgressBar()
+        inOrder.verify(mainView).hideProgressBar()
+        inOrder.verify(mainView).showErrorMessage(any())
     }
 
     private fun generateErrorResponse(): Response<HttpException> {
