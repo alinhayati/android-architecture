@@ -14,3 +14,4 @@ This is the complementary repository to the series of articles on <a href="http:
 
 <h3>Model-View-Presenter (MVP) app:</h3>
 <p><i>branch</i>: mvp</p>
+<p><i>article</i>: <a href="http://www.digigene.com/architecture/android-architecture-part-3-mvp/">android architecture: Part 3: MVP</a></p>
