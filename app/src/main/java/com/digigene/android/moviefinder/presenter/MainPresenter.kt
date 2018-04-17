@@ -7,14 +7,14 @@ import android.widget.Toast
 import com.digigene.android.easymvp.BasePresenterImpl
 import com.digigene.android.moviefinder.DetailActivity
 import com.digigene.android.moviefinder.model.MainModel
-import com.digigene.android.moviefinder.view.MainViewImpl
+import com.digigene.android.moviefinder.view.MainView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.main_fragment_layout.*
 
-class MainPresenterImpl : BasePresenterImpl<MainViewImpl, MainModel>() {
+class MainPresenter : BasePresenterImpl<MainView, MainModel>() {
     private val mainModel: MainModel = MainModel()
 
     fun findAddress(address: String) {

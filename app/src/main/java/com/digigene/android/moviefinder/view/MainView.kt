@@ -7,15 +7,15 @@ import android.view.ViewGroup
 import com.digigene.android.easymvp.BaseViewImpl
 import com.digigene.android.moviefinder.R
 import com.digigene.android.moviefinder.model.MainModel
-import com.digigene.android.moviefinder.presenter.MainPresenterImpl
+import com.digigene.android.moviefinder.presenter.MainPresenter
 import kotlinx.android.synthetic.main.item.view.*
 import kotlinx.android.synthetic.main.main_fragment_layout.*
 
-class MainViewImpl : BaseViewImpl<MainPresenterImpl>() {
+class MainView : BaseViewImpl<MainPresenter>() {
     private lateinit var addressAdapter: AddressAdapter
 
-    override fun introducePresenter(): MainPresenterImpl {
-        return MainPresenterImpl()
+    override fun introducePresenter(): MainPresenter {
+        return MainPresenter()
     }
 
     override fun getFragmentLayout(): Int {
