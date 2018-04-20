@@ -1,10 +1,14 @@
 package com.digigene.android.moviefinder.view
 
+import android.content.Intent
+import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.digigene.android.easymvp.BaseViewImpl
+import com.digigene.android.moviefinder.DetailActivity
 import com.digigene.android.moviefinder.R
 import com.digigene.android.moviefinder.model.MainModel
 import com.digigene.android.moviefinder.presenter.MainPresenter
@@ -25,7 +29,7 @@ class MainView : BaseViewImpl<MainPresenter>() {
     override fun setListeners() {
         main_fragment_button.setOnClickListener({ mPresenter.findAddress(main_fragment_editText.text.toString()) })
         addressAdapter setItemClickMethod {
-            mPresenter doWhenClickIsMadeOn it
+            mPresenter.doWhenItemIsClicked(it)
         }
         addressAdapter.setItemShowMethod { mPresenter fetchItemTextFrom it }
     }
@@ -46,6 +50,21 @@ class MainView : BaseViewImpl<MainPresenter>() {
     fun updateMovieList(t: List<MainModel.ResultEntity>) {
         addressAdapter.updateList(t)
         addressAdapter.notifyDataSetChanged()
+    }
+
+    fun showErrorMessage(s: String) {
+        Toast.makeText(activity, s, Toast.LENGTH_SHORT).show()
+    }
+
+    infix fun goToActivity(item: MainModel.ResultEntity) {
+        var bundle = Bundle()
+        bundle.putString(DetailActivity.Constants.RATING, item.rating)
+        bundle.putString(DetailActivity.Constants.TITLE, item.title)
+        bundle.putString(DetailActivity.Constants.YEAR, item.year)
+        bundle.putString(DetailActivity.Constants.DATE, item.date)
+        var intent = Intent(activity, DetailActivity::class.java)
+        intent.putExtras(bundle)
+        startActivity(intent)
     }
 
     class AddressAdapter : RecyclerView.Adapter<AddressAdapter.Holder>() {
