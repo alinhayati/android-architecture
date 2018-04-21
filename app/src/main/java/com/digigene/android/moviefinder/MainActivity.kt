@@ -1,5 +1,6 @@
 package com.digigene.android.moviefinder
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     private fun respondToClicks() {
         main_activity_button.setOnClickListener({ mMainPresenter.findAddress(main_activity_editText.text.toString()) })
         addressAdapter setItemClickMethod {
-            mMainPresenter doWhenClickIsMadeOn it
+            mMainPresenter doWhenItemIsClicked it
         }
         addressAdapter.setItemShowMethod { mMainPresenter fetchItemTextFrom it }
     }
@@ -59,6 +60,17 @@ class MainActivity : AppCompatActivity() {
     fun updateMovieList(t: List<MainModel.ResultEntity>) {
         addressAdapter.updateList(t)
         addressAdapter.notifyDataSetChanged()
+    }
+
+    fun goToDetailActivity(item: MainModel.ResultEntity) {
+        var bundle = Bundle()
+        bundle.putString(DetailActivity.Constants.RATING, item.rating)
+        bundle.putString(DetailActivity.Constants.TITLE, item.title)
+        bundle.putString(DetailActivity.Constants.YEAR, item.year)
+        bundle.putString(DetailActivity.Constants.DATE, item.date)
+        var intent = Intent(this, DetailActivity::class.java)
+        intent.putExtras(bundle)
+        startActivity(intent)
     }
 
     class AddressAdapter : RecyclerView.Adapter<AddressAdapter.Holder>() {
