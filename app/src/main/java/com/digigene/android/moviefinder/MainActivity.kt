@@ -9,21 +9,34 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.digigene.android.moviefinder.model.MainModel
-import com.digigene.android.moviefinder.presenter.MainPresenter
+import com.digigene.android.moviefinder.presenter.MainViewModel
+import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item.view.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var mMainPresenter: MainPresenter
+    private lateinit var mMainViewModel: MainViewModel
     private lateinit var addressAdapter: AddressAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mMainPresenter = MainPresenter(MainModel())
-        mMainPresenter hasView this
+        mMainViewModel = MainViewModel(MainModel())
         loadView()
         respondToClicks()
+        listenToObservables()
+    }
+
+    private fun listenToObservables() {
+        mMainViewModel.itemObservable.subscribe(Consumer { goToDetailActivity(it) })
+        mMainViewModel.resultListObservable.subscribe(Consumer {
+            hideProgressBar()
+            updateMovieList(it)
+        })
+        mMainViewModel.resultListErrorObservable.subscribe(Consumer {
+            hideProgressBar()
+            showErrorMessage(it.message())
+        })
     }
 
     private fun loadView() {
@@ -33,11 +46,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun respondToClicks() {
-        main_activity_button.setOnClickListener({ mMainPresenter.findAddress(main_activity_editText.text.toString()) })
+        main_activity_button.setOnClickListener({
+            showProgressBar()
+            mMainViewModel.findAddress(main_activity_editText.text.toString())
+        })
         addressAdapter setItemClickMethod {
-            mMainPresenter doWhenItemIsClicked it
+            mMainViewModel.doOnItemClick(it)
         }
-        addressAdapter.setItemShowMethod { mMainPresenter fetchItemTextFrom it }
     }
 
     fun showProgressBar() {
@@ -54,10 +69,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        mMainPresenter.onStop()
+        mMainViewModel.cancelNetworkConnections()
     }
 
-    fun updateMovieList(t: List<MainModel.ResultEntity>) {
+    fun updateMovieList(t: List<String>) {
         addressAdapter.updateList(t)
         addressAdapter.notifyDataSetChanged()
     }
@@ -74,9 +89,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     class AddressAdapter : RecyclerView.Adapter<AddressAdapter.Holder>() {
-        var mList: List<MainModel.ResultEntity> = arrayListOf()
-        private lateinit var mOnClick: (item: MainModel.ResultEntity) -> Unit
-        private lateinit var mOnShowItem: (item: MainModel.ResultEntity) -> String
+        var mList: List<String> = arrayListOf()
+        private lateinit var mOnClick: (position: Int) -> Unit
 
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): Holder {
             val view = LayoutInflater.from(parent!!.context).inflate(R.layout.item, parent, false)
@@ -84,23 +98,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
-            holder.itemView.item_textView.text = mOnShowItem(mList[position])
-            holder.itemView.setOnClickListener { mOnClick(mList[position]) }
+            holder.itemView.item_textView.text = mList[position]
+            holder.itemView.setOnClickListener { mOnClick(position) }
         }
 
         override fun getItemCount(): Int {
             return mList.size
         }
 
-        infix fun setItemClickMethod(onClick: (item: MainModel.ResultEntity) -> Unit) {
+        infix fun setItemClickMethod(onClick: (position: Int) -> Unit) {
             this.mOnClick = onClick
         }
 
-        infix fun setItemShowMethod(onShowItem: (item: MainModel.ResultEntity) -> String) {
-            this.mOnShowItem = onShowItem
-        }
-
-        fun updateList(list: List<MainModel.ResultEntity>) {
+        fun updateList(list: List<String>) {
             mList = list
         }
 
