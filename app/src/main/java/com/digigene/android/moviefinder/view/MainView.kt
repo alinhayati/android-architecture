@@ -18,10 +18,6 @@ import kotlinx.android.synthetic.main.main_fragment_layout.*
 class MainView : BaseViewImpl<MainPresenter>() {
     private lateinit var addressAdapter: AddressAdapter
 
-    override fun introducePresenter(): MainPresenter {
-        return MainPresenter()
-    }
-
     override fun getFragmentLayout(): Int {
         return R.layout.main_fragment_layout
     }

@@ -8,7 +8,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 
-class MainPresenter : BasePresenterImpl<MainView, MainModel>() {
+class MainPresenter : BasePresenterImpl<MainView>() {
     private val mainModel: MainModel = MainModel()
 
     fun findAddress(address: String) {
