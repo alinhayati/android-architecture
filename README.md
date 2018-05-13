@@ -16,6 +16,9 @@ This is the complementary repository to the series of articles on <a href="http:
 <p><i>branch</i>: mvp</p>
 <p><i>article</i>: <a href="http://www.digigene.com/architecture/android-architecture-part-3-mvp/">android architecture: Part 3: MVP</a></p>
 
+<h3>Model-View-ViewModel (MVVM) app using RxJava:</h3>
+<p><i>branch</i>: mvvm-rxjava</p>
+<p><i>article</i>: <a href="http://www.digigene.com/architecture/android-architecture-part-4-mvvm-with-rxjava/">android architecture: Part 4: MVVM with RxJava</a></p>
 
 <h3>Model-View-Presenter (MVP) app using 'easy-mvp' library:</h3>
 <p><i>branch</i>: mvp-easymvp</p>
