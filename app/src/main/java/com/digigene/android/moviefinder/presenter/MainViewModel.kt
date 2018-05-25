@@ -10,6 +10,7 @@ import retrofit2.HttpException
 
 class MainViewModel() {
     lateinit var resultListObservable: PublishSubject<List<String>>
+    lateinit var resultListObservable: PublishSubject<List<String>>
     lateinit var resultListErrorObservable: PublishSubject<HttpException>
     lateinit var itemObservable: PublishSubject<MainModel.ResultEntity>
     private lateinit var entityList: List<MainModel.ResultEntity>
