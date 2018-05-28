@@ -1,28 +1,23 @@
 package com.digigene.android.moviefinder.presenter
 
+import android.arch.lifecycle.ViewModel
 import com.digigene.android.moviefinder.SchedulersWrapper
 import com.digigene.android.moviefinder.model.MainModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableSingleObserver
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import retrofit2.HttpException
 
-class MainViewModel() {
-    lateinit var resultListObservable: PublishSubject<List<String>>
-    lateinit var resultListErrorObservable: PublishSubject<HttpException>
-    lateinit var itemObservable: PublishSubject<MainModel.ResultEntity>
+class MainViewModel() : ViewModel() {
+    val resultListObservable: BehaviorSubject<List<String>> = BehaviorSubject.create()
+    val resultListErrorObservable: BehaviorSubject<HttpException> = BehaviorSubject.create()
+    val itemObservable: PublishSubject<MainModel.ResultEntity> = PublishSubject.create()
     private lateinit var entityList: List<MainModel.ResultEntity>
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private lateinit var mainModel: MainModel
+    lateinit var mainModel: MainModel
     private val schedulersWrapper = SchedulersWrapper()
-
-    constructor(mMainModel: MainModel) : this() {
-        mainModel = mMainModel
-        resultListObservable = PublishSubject.create()
-        resultListErrorObservable = PublishSubject.create()
-        itemObservable = PublishSubject.create()
-    }
 
     fun findAddress(address: String) {
         val disposable: Disposable = mainModel.fetchAddress(address)!!.subscribeOn(schedulersWrapper.io()).observeOn(schedulersWrapper.main()).subscribeWith(object : DisposableSingleObserver<List<MainModel.ResultEntity>?>() {
@@ -36,10 +31,6 @@ class MainViewModel() {
             }
         })
         compositeDisposable.add(disposable)
-    }
-
-    fun cancelNetworkConnections() {
-        compositeDisposable.clear()
     }
 
     private fun fetchItemTextFrom(it: List<MainModel.ResultEntity>): ArrayList<String> {
