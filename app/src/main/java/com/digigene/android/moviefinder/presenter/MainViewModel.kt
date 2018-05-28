@@ -1,46 +1,35 @@
 package com.digigene.android.moviefinder.presenter
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.ViewModel
 import com.digigene.android.moviefinder.SchedulersWrapper
 import com.digigene.android.moviefinder.model.MainModel
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableSingleObserver
-import io.reactivex.subjects.PublishSubject
 import retrofit2.HttpException
 
-class MainViewModel() {
-    lateinit var resultListObservable: PublishSubject<List<String>>
-    lateinit var resultListObservable: PublishSubject<List<String>>
-    lateinit var resultListErrorObservable: PublishSubject<HttpException>
-    lateinit var itemObservable: PublishSubject<MainModel.ResultEntity>
+class MainViewModel() : ViewModel() {
+    private val resultListObservable = MutableLiveData<List<String>>()
+    private val resultListErrorObservable = MutableLiveData<HttpException>()
+    private val itemObservable = MutableLiveData<MainModel.ResultEntity>()
+    fun getResultListObservable(): LiveData<List<String>> = resultListObservable
+    fun getResultListErrorObservable(): LiveData<HttpException> = resultListErrorObservable
+    fun getItemObservable(): LiveData<MainModel.ResultEntity> = itemObservable
     private lateinit var entityList: List<MainModel.ResultEntity>
-    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private lateinit var mainModel: MainModel
+    lateinit var mainModel: MainModel
     private val schedulersWrapper = SchedulersWrapper()
 
-    constructor(mMainModel: MainModel) : this() {
-        mainModel = mMainModel
-        resultListObservable = PublishSubject.create()
-        resultListErrorObservable = PublishSubject.create()
-        itemObservable = PublishSubject.create()
-    }
-
     fun findAddress(address: String) {
-        val disposable: Disposable = mainModel.fetchAddress(address)!!.subscribeOn(schedulersWrapper.io()).observeOn(schedulersWrapper.main()).subscribeWith(object : DisposableSingleObserver<List<MainModel.ResultEntity>?>() {
+        mainModel.fetchAddress(address)!!.subscribeOn(schedulersWrapper.io()).observeOn(schedulersWrapper.main()).subscribeWith(object : DisposableSingleObserver<List<MainModel.ResultEntity>?>() {
             override fun onSuccess(t: List<MainModel.ResultEntity>) {
                 entityList = t
-                resultListObservable.onNext(fetchItemTextFrom(t))
+                resultListObservable.postValue(fetchItemTextFrom(t))
             }
 
             override fun onError(e: Throwable) {
-                resultListErrorObservable.onNext(e as HttpException)
+                resultListErrorObservable.postValue(e as HttpException)
             }
         })
-        compositeDisposable.add(disposable)
-    }
-
-    fun cancelNetworkConnections() {
-        compositeDisposable.clear()
     }
 
     private fun fetchItemTextFrom(it: List<MainModel.ResultEntity>): ArrayList<String> {
@@ -52,7 +41,6 @@ class MainViewModel() {
     }
 
     fun doOnItemClick(position: Int) {
-        itemObservable.onNext(entityList[position])
+        itemObservable.value = entityList[position]
     }
-
 }

@@ -1,5 +1,7 @@
 package com.digigene.android.moviefinder
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -10,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.digigene.android.moviefinder.model.MainModel
 import com.digigene.android.moviefinder.presenter.MainViewModel
-import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item.view.*
 
@@ -21,21 +22,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mMainViewModel = MainViewModel(MainModel())
+        mMainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        mMainViewModel.mainModel = MainModel()
         loadView()
         respondToClicks()
         listenToObservables()
     }
 
     private fun listenToObservables() {
-        mMainViewModel.itemObservable.subscribe(Consumer { goToDetailActivity(it) })
-        mMainViewModel.resultListObservable.subscribe(Consumer {
+        mMainViewModel.getItemObservable().observe(this, Observer { goToDetailActivity(it!!) })
+        mMainViewModel.getResultListObservable().observe(this, Observer {
             hideProgressBar()
-            updateMovieList(it)
+            updateMovieList(it!!)
         })
-        mMainViewModel.resultListErrorObservable.subscribe(Consumer {
+        mMainViewModel.getResultListErrorObservable().observe(this, Observer {
             hideProgressBar()
-            showErrorMessage(it.message())
+            showErrorMessage(it!!.message())
         })
     }
 
@@ -65,11 +67,6 @@ class MainActivity : AppCompatActivity() {
 
     fun showErrorMessage(errorMsg: String) {
         Toast.makeText(this, "Error retrieving data: $errorMsg", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        mMainViewModel.cancelNetworkConnections()
     }
 
     fun updateMovieList(t: List<String>) {
