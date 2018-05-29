@@ -1,7 +1,6 @@
 package com.digigene.android.moviefinder
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -22,8 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mMainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        mMainViewModel.mainModel = MainModel()
+        mMainViewModel = MainViewModel(MainModel())
         loadView()
         respondToClicks()
         listenToObservables()

@@ -2,13 +2,12 @@ package com.digigene.android.moviefinder.presenter
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
 import com.digigene.android.moviefinder.SchedulersWrapper
 import com.digigene.android.moviefinder.model.MainModel
 import io.reactivex.observers.DisposableSingleObserver
 import retrofit2.HttpException
 
-class MainViewModel() : ViewModel() {
+class MainViewModel(val mainModel: MainModel) {
     private val resultListObservable = MutableLiveData<List<String>>()
     private val resultListErrorObservable = MutableLiveData<HttpException>()
     private val itemObservable = MutableLiveData<MainModel.ResultEntity>()
@@ -16,7 +15,6 @@ class MainViewModel() : ViewModel() {
     fun getResultListErrorObservable(): LiveData<HttpException> = resultListErrorObservable
     fun getItemObservable(): LiveData<MainModel.ResultEntity> = itemObservable
     private lateinit var entityList: List<MainModel.ResultEntity>
-    lateinit var mainModel: MainModel
     private val schedulersWrapper = SchedulersWrapper()
 
     fun findAddress(address: String) {
