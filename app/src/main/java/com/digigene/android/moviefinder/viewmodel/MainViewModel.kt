@@ -1,4 +1,4 @@
-package com.digigene.android.moviefinder.presenter
+package com.digigene.android.moviefinder.viewmodel
 
 import com.digigene.android.moviefinder.SchedulersWrapper
 import com.digigene.android.moviefinder.model.MainModel
