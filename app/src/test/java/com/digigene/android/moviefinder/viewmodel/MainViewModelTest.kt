@@ -1,4 +1,4 @@
-package com.digigene.android.moviefinder.presenter
+package com.digigene.android.moviefinder.viewmodel
 
 import okhttp3.MediaType
 import okhttp3.ResponseBody

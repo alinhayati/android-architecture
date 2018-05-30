@@ -1,4 +1,4 @@
-package com.digigene.android.moviefinder.presenter
+package com.digigene.android.moviefinder.viewmodel
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
