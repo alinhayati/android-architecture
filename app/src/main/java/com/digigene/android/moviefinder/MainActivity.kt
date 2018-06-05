@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.item.view.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mMainViewModel: MainViewModel
-    private lateinit var addressAdapter: AddressAdapter
+    private lateinit var mAddressAdapter: AddressAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,8 +41,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadView() {
         setContentView(R.layout.activity_main)
-        addressAdapter = AddressAdapter()
-        main_activity_recyclerView.adapter = addressAdapter
+        mAddressAdapter = AddressAdapter()
+        main_activity_recyclerView.adapter = mAddressAdapter
     }
 
     private fun respondToClicks() {
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
             showProgressBar()
             mMainViewModel.findAddress(main_activity_editText.text.toString())
         })
-        addressAdapter setItemClickMethod {
+        mAddressAdapter setItemClickMethod {
             mMainViewModel.doOnItemClick(it)
         }
     }
@@ -68,8 +68,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun updateMovieList(t: List<String>) {
-        addressAdapter.updateList(t)
-        addressAdapter.notifyDataSetChanged()
+        mAddressAdapter.updateList(t)
+        mAddressAdapter.notifyDataSetChanged()
     }
 
     fun goToDetailActivity(item: MainModel.ResultEntity) {
