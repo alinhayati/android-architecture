@@ -23,7 +23,7 @@ This is the complementary repository to the series of articles on <a href="http:
 <p><i>branch</i>: mvvm-livedata</p>
 <p><i>article</i>: <a href="http://www.digigene.com/architecture/android-architecture-part-5-mvvm-with-livedata/">android architecture: Part 5: MVVM with LiveData</a></p>
 
-<h3>Model-View-ViewModel (MVVM) app using LiveData ViewModel:</h3>
+<h3>Model-View-ViewModel (MVVM) app using LiveData and ViewModel:</h3>
 <p><i>branch</i>: mvvm-liveData&viewModel</p>
 <p><i>article</i>: <a href="http://www.digigene.com/architecture/android-architecture-part-6-mvvm-with-livedata-and-viewmodel/">android architecture: Part 6: MVVM with LiveData and ViewModel</a></p>
 
