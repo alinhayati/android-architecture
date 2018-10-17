@@ -10,37 +10,37 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.digigene.android.moviefinder.model.MainModel
-import com.digigene.android.moviefinder.viewmodel.MainViewModel
+import com.digigene.android.moviefinder.ui.MainViewModel
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item.view.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var mMainViewModel: MainViewModel
+    private lateinit var mainViewModel: MainViewModel
     private lateinit var addressAdapter: AddressAdapter
     val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mMainViewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
-        mMainViewModel.mainModel = MainModel()
+        mainViewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
+//        val binding:DataBinderMapperImpl=DataBindingUtil.setContentView(this,R.layout.activity_main)
+        mainViewModel.mainModel = MainModel()
         loadView()
         respondToClicks()
         listenToObservables()
     }
 
     private fun listenToObservables() {
-        val disposable1 = mMainViewModel.itemObservable.subscribe(Consumer { goToDetailActivity(it) })
-        val disposable2 = mMainViewModel.resultListObservable.subscribe(Consumer {
+        val disposable1 = mainViewModel.itemObservable.subscribe { goToDetailActivity(it) }
+        val disposable2 = mainViewModel.resultListObservable.subscribe {
             hideProgressBar()
             updateMovieList(it)
-        })
-        val disposable3 = mMainViewModel.resultListErrorObservable.subscribe(Consumer {
+        }
+        val disposable3 = mainViewModel.resultListErrorObservable.subscribe {
             hideProgressBar()
             showErrorMessage(it.message())
-        })
+        }
         compositeDisposable.addAll(disposable1, disposable2, disposable3)
     }
 
@@ -51,12 +51,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun respondToClicks() {
-        main_activity_button.setOnClickListener({
+        main_activity_button.setOnClickListener {
             showProgressBar()
-            mMainViewModel.findAddress(main_activity_editText.text.toString())
-        })
+            mainViewModel.findAddress(main_activity_editText.text.toString())
+        }
         addressAdapter setItemClickMethod {
-            mMainViewModel.doOnItemClick(it)
+            mainViewModel.doOnItemClick(it)
         }
     }
 
