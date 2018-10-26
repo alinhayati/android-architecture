@@ -2,6 +2,7 @@ package com.digigene.android.moviefinder
 
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.digigene.android.moviefinder.databinding.ActivityMainBinding
 import com.digigene.android.moviefinder.model.MainModel
 import com.digigene.android.moviefinder.viewmodel.MainViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -26,6 +28,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mMainViewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
         mMainViewModel.mainModel = MainModel()
+        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+//        binding.viewmodel = mMainViewModel
         loadView()
         respondToClicks()
         listenToObservables()
@@ -33,14 +37,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun listenToObservables() {
         val disposable1 = mMainViewModel.itemObservable.subscribe(Consumer { goToDetailActivity(it) })
-        val disposable2 = mMainViewModel.resultListObservable.subscribe(Consumer {
-            hideProgressBar()
+        val disposable2 = mMainViewModel.resultListObservable.subscribe {
             updateMovieList(it)
-        })
-        val disposable3 = mMainViewModel.resultListErrorObservable.subscribe(Consumer {
-            hideProgressBar()
+            //            hideProgressBar()
+        }
+        val disposable3 = mMainViewModel.resultListErrorObservable.subscribe {
             showErrorMessage(it.message())
-        })
+            //            hideProgressBar()
+        }
         compositeDisposable.addAll(disposable1, disposable2, disposable3)
     }
 
@@ -51,10 +55,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun respondToClicks() {
-        main_activity_button.setOnClickListener({
-            showProgressBar()
+        main_activity_button.setOnClickListener {
+            //            showProgressBar()
             mMainViewModel.findAddress(main_activity_editText.text.toString())
-        })
+        }
         addressAdapter setItemClickMethod {
             mMainViewModel.doOnItemClick(it)
         }
@@ -65,13 +69,13 @@ class MainActivity : AppCompatActivity() {
         compositeDisposable.clear()
     }
 
-    fun showProgressBar() {
-        main_activity_progress_bar.visibility = View.VISIBLE
-    }
+//    fun showProgressBar() {
+//        main_activity_progress_bar.visibility = View.VISIBLE
+//    }
 
-    fun hideProgressBar() {
-        main_activity_progress_bar.visibility = View.GONE
-    }
+//    fun hideProgressBar() {
+//        main_activity_progress_bar.visibility = View.GONE
+//    }
 
     fun showErrorMessage(errorMsg: String) {
         Toast.makeText(this, "Error retrieving data: $errorMsg", Toast.LENGTH_SHORT).show()

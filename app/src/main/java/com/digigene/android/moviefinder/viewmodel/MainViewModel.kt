@@ -1,6 +1,7 @@
 package com.digigene.android.moviefinder.viewmodel
 
 import android.arch.lifecycle.ViewModel
+import android.databinding.ObservableField
 import com.digigene.android.moviefinder.SchedulersWrapper
 import com.digigene.android.moviefinder.model.MainModel
 import io.reactivex.disposables.CompositeDisposable
@@ -14,6 +15,8 @@ class MainViewModel() : ViewModel() {
     val resultListObservable: BehaviorSubject<List<String>> = BehaviorSubject.create()
     val resultListErrorObservable: BehaviorSubject<HttpException> = BehaviorSubject.create()
     val itemObservable: PublishSubject<MainModel.ResultEntity> = PublishSubject.create()
+    val viewResultListObservable = ObservableField<List<MainModel.ResultEntity>>()
+    val viewErrorObservable = ObservableField<HttpException>()
     private lateinit var entityList: List<MainModel.ResultEntity>
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     lateinit var mainModel: MainModel
@@ -24,10 +27,12 @@ class MainViewModel() : ViewModel() {
             override fun onSuccess(t: List<MainModel.ResultEntity>) {
                 entityList = t
                 resultListObservable.onNext(fetchItemTextFrom(t))
+                viewResultListObservable.set(t)
             }
 
             override fun onError(e: Throwable) {
                 resultListErrorObservable.onNext(e as HttpException)
+                viewErrorObservable.set(e)
             }
         })
         compositeDisposable.add(disposable)
