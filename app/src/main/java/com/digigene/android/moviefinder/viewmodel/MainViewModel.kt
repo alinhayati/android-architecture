@@ -9,8 +9,8 @@ import io.reactivex.observers.DisposableSingleObserver
 import retrofit2.HttpException
 
 class MainViewModel() : ViewModel() {
-    private val resultListObservable = MutableLiveData<List<String>>()
-    private val resultListErrorObservable = MutableLiveData<HttpException>()
+    val resultListObservable = MutableLiveData<List<String>>()
+    val resultListErrorObservable = MutableLiveData<HttpException>()
     private val itemObservable = MutableLiveData<MainModel.ResultEntity>()
     fun getResultListObservable(): LiveData<List<String>> = resultListObservable
     fun getResultListErrorObservable(): LiveData<HttpException> = resultListErrorObservable
