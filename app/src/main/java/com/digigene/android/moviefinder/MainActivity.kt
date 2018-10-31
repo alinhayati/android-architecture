@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.digigene.android.moviefinder.model.MainModel
 import com.digigene.android.moviefinder.viewmodel.MainViewModel
+import com.digigene.android.moviefinder.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item.view.*
 
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mMainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        mMainViewModel = ViewModelProviders.of(this, MainViewModelFactory(SchedulersWrapper())).get(MainViewModel::class.java)
         mMainViewModel.mainModel = MainModel()
         loadView()
         respondToClicks()

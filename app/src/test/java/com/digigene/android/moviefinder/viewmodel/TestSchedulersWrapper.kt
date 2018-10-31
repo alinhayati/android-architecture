@@ -3,12 +3,12 @@ package com.digigene.android.moviefinder
 import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
 
-class SchedulersWrapper {
-    fun io(): Scheduler {
+class TestSchedulersWrapper : SchedulersWrapper() {
+    override fun io(): Scheduler {
         return Schedulers.trampoline()
     }
 
-    fun main(): Scheduler {
+    override fun main(): Scheduler {
         return Schedulers.trampoline()
     }
 }

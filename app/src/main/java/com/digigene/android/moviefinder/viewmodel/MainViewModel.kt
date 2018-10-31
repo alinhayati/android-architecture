@@ -8,16 +8,15 @@ import com.digigene.android.moviefinder.model.MainModel
 import io.reactivex.observers.DisposableSingleObserver
 import retrofit2.HttpException
 
-class MainViewModel() : ViewModel() {
+class MainViewModel(val schedulersWrapper: SchedulersWrapper) : ViewModel() {
     val resultListObservable = MutableLiveData<List<String>>()
     val resultListErrorObservable = MutableLiveData<HttpException>()
     private val itemObservable = MutableLiveData<MainModel.ResultEntity>()
     fun getResultListObservable(): LiveData<List<String>> = resultListObservable
     fun getResultListErrorObservable(): LiveData<HttpException> = resultListErrorObservable
     fun getItemObservable(): LiveData<MainModel.ResultEntity> = itemObservable
-    private lateinit var entityList: List<MainModel.ResultEntity>
+    lateinit var entityList: List<MainModel.ResultEntity>
     lateinit var mainModel: MainModel
-    private val schedulersWrapper = SchedulersWrapper()
 
     fun findAddress(address: String) {
         mainModel.fetchAddress(address)!!.subscribeOn(schedulersWrapper.io()).observeOn(schedulersWrapper.main()).subscribeWith(object : DisposableSingleObserver<List<MainModel.ResultEntity>?>() {
