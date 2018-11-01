@@ -37,7 +37,6 @@ class MainViewModelTest {
     @Before
     fun setup() {
         reset(mainModel)
-//        MockitoAnnotations.initMocks(this)
     }
 
     @Test

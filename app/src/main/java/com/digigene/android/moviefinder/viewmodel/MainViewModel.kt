@@ -6,15 +6,16 @@ import android.arch.lifecycle.ViewModel
 import com.digigene.android.moviefinder.SchedulersWrapper
 import com.digigene.android.moviefinder.model.MainModel
 import io.reactivex.observers.DisposableSingleObserver
+import io.reactivex.subjects.PublishSubject
 import retrofit2.HttpException
 
 class MainViewModel(val schedulersWrapper: SchedulersWrapper) : ViewModel() {
     val resultListObservable = MutableLiveData<List<String>>()
     val resultListErrorObservable = MutableLiveData<HttpException>()
-    private val itemObservable = MutableLiveData<MainModel.ResultEntity>()
+    val itemObservable = PublishSubject.create<MainModel.ResultEntity>()
     fun getResultListObservable(): LiveData<List<String>> = resultListObservable
     fun getResultListErrorObservable(): LiveData<HttpException> = resultListErrorObservable
-    fun getItemObservable(): LiveData<MainModel.ResultEntity> = itemObservable
+    //    fun getItemObservable(): LiveData<MainModel.ResultEntity> = itemObservable
     lateinit var entityList: List<MainModel.ResultEntity>
     lateinit var mainModel: MainModel
 
@@ -40,6 +41,6 @@ class MainViewModel(val schedulersWrapper: SchedulersWrapper) : ViewModel() {
     }
 
     fun doOnItemClick(position: Int) {
-        itemObservable.value = entityList[position]
+        itemObservable.onNext(entityList[position])
     }
 }

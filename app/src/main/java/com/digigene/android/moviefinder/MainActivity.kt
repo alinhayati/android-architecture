@@ -2,6 +2,7 @@ package com.digigene.android.moviefinder
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.digigene.android.moviefinder.model.MainModel
 import com.digigene.android.moviefinder.viewmodel.MainViewModel
@@ -31,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun listenToObservables() {
-        mMainViewModel.getItemObservable().observe(this, Observer { goToDetailActivity(it!!) })
+        mMainViewModel.itemObservable.subscribe { goToDetailActivity(it!!) }
         mMainViewModel.getResultListObservable().observe(this, Observer {
             hideProgressBar()
             updateMovieList(it!!)
@@ -49,10 +51,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun respondToClicks() {
-        main_activity_button.setOnClickListener({
+        main_activity_button.setOnClickListener {
+            main_activity_editText.clearFocus()
+            showSoftKeyboard(false, this)
             showProgressBar()
             mMainViewModel.findAddress(main_activity_editText.text.toString())
-        })
+        }
         addressAdapter setItemClickMethod {
             mMainViewModel.doOnItemClick(it)
         }
@@ -84,6 +88,18 @@ class MainActivity : AppCompatActivity() {
         var intent = Intent(this, DetailActivity::class.java)
         intent.putExtras(bundle)
         startActivity(intent)
+    }
+
+    private fun showSoftKeyboard(showKeyboard: Boolean, activity: AppCompatActivity) {
+        val inputManager = activity.getSystemService(
+                Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        if (activity.currentFocus != null) {
+            inputManager.hideSoftInputFromWindow(activity.currentFocus!!.windowToken,
+                    if (showKeyboard)
+                        InputMethodManager.SHOW_FORCED
+                    else
+                        InputMethodManager.HIDE_NOT_ALWAYS)
+        }
     }
 
     class AddressAdapter : RecyclerView.Adapter<AddressAdapter.Holder>() {
