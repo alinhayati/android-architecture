@@ -27,6 +27,9 @@ This is the complementary repository to the series of articles on <a href="http:
 <p><i>branch</i>: mvvm-liveData&viewModel</p>
 <p><i>article</i>: <a href="http://www.digigene.com/architecture/android-architecture-part-6-mvvm-with-livedata-and-viewmodel/">android architecture: Part 6: MVVM with LiveData and ViewModel</a></p>
 
+<h3>Model-View-ViewModel (MVVM) app using LiveData and ViewModel:</h3>
+<p><i>branch</i>: mvvm-liveData&viewModel-revised</p>
+<p><i>article</i>: <a href="http://digigene.com/architecture/android-architecture-part-7-viewmodel-livedata-rxjava-mvvm/">android architecture: Part 7: ViewModel with LiveData and RxJava</a></p>
 
 <h3>Model-View-Presenter (MVP) app using 'easy-mvp' library:</h3>
 <p><i>branch</i>: mvp-easymvp</p>
