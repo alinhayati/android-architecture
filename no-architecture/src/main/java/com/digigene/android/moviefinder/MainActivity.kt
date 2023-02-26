@@ -2,11 +2,14 @@ package com.digigene.android.moviefinder
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import com.digigene.android.moviefinder.MainActivity.Constants.DATE
 import com.digigene.android.moviefinder.MainActivity.Constants.RATING
@@ -18,8 +21,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.item.view.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -30,7 +31,6 @@ import retrofit2.http.Query
 
 class MainActivity : AppCompatActivity() {
     object Constants {
-        const val MOVIE_INFO = "movie_info"
         const val RATING = "rating"
         const val TITLE = "title"
         const val YEAR = "year"
@@ -44,21 +44,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         addressAdapter = AddressAdapter(onClick = { item ->
-            var bundle = Bundle()
+            val bundle = Bundle()
             bundle.putString(RATING, item.rating)
             bundle.putString(TITLE, item.title)
             bundle.putString(YEAR, item.year)
             bundle.putString(DATE, item.date)
-            var intent = Intent(this, DetailActivity::class.java)
+            val intent = Intent(this, DetailActivity::class.java)
             intent.putExtras(bundle)
             startActivity(intent)
         })
-        main_activity_recyclerView.adapter = addressAdapter
+        findViewById<RecyclerView>(R.id.main_activity_recyclerView).adapter = addressAdapter
         respondToClicks()
     }
 
     private fun respondToClicks() {
-        main_activity_button.setOnClickListener({ findAddress(main_activity_editText.text.toString()) })
+        findViewById<Button>(R.id.main_activity_button).setOnClickListener {
+            findAddress(
+                findViewById<TextView>(R.id.main_activity_editText).text.toString()
+            )
+        }
     }
 
     override fun onResume() {
@@ -81,19 +85,19 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onError(e: Throwable) {
-                main_activity_progress_bar.visibility = View.GONE
-                Toast.makeText(this@MainActivity, "Error retrieving data: ${e.message}", Toast.LENGTH_SHORT)
+                findViewById<ProgressBar>(R.id.main_activity_progress_bar).visibility = View.GONE
+                Toast.makeText(this@MainActivity, "Error retrieving data: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         })
         compositeDisposable.add(disposable)
     }
 
     private fun showProgressBar() {
-        main_activity_progress_bar.visibility = View.VISIBLE
+        findViewById<ProgressBar>(R.id.main_activity_progress_bar).visibility = View.VISIBLE
     }
 
     private fun hideProgressBar() {
-        main_activity_progress_bar.visibility = View.GONE
+        findViewById<ProgressBar>(R.id.main_activity_progress_bar).visibility = View.GONE
     }
 
     override fun onStop() {
@@ -110,13 +114,13 @@ class MainActivity : AppCompatActivity() {
         var mList: List<ResultEntity> = arrayListOf()
 
 
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): Holder {
-            val view = LayoutInflater.from(parent!!.context).inflate(R.layout.item, parent, false)
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item, parent, false)
             return Holder(view)
         }
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
-            holder.itemView.item_textView.text = "${mList[position].year}: ${mList[position].title}"
+            holder.itemView.findViewById<TextView>(R.id.item_textView).text = "${mList[position].year}: ${mList[position].title}"
             holder.itemView.setOnClickListener { onClick(mList[position]) }
         }
 
@@ -128,7 +132,7 @@ class MainActivity : AppCompatActivity() {
             mList = list
         }
 
-        class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView)
+        class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView!!)
     }
 
 
