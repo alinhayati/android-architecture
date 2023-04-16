@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+@file:OptIn(
     ExperimentalMaterial3Api::class
 )
 
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun <T> listenWithLifecycleAware(listenable: suspend () -> Unit) {
+    private fun listenWithLifecycleAware(listenable: suspend () -> Unit) {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 listenable()
@@ -95,13 +95,13 @@ class MainActivity : AppCompatActivity() {
                     Text(text = "FIND")
                 }
                 list?.let { buildListView(it) }
-                listenWithLifecycleAware<List<ResultEntity>> {
+                listenWithLifecycleAware {
                     viewmodel.list.collect { list = it }
                 }
-                listenWithLifecycleAware<Boolean> {
+                listenWithLifecycleAware {
                     viewmodel.showProgressBar.collect { showProgressBar = it }
                 }
-                listenWithLifecycleAware<String> {
+                listenWithLifecycleAware {
                     viewmodel.error.collect {
                         Toast.makeText(this@MainActivity, it, Toast.LENGTH_SHORT).show()
                     }
