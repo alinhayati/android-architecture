@@ -1,25 +1,31 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class
+)
 
 package com.digigene.android.moviefinder
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.RecyclerView
 import com.digigene.android.moviefinder.MainActivity.Constants.DATE
 import com.digigene.android.moviefinder.MainActivity.Constants.RATING
 import com.digigene.android.moviefinder.MainActivity.Constants.TITLE
@@ -38,52 +44,12 @@ class MainActivity : AppCompatActivity() {
         const val DATE = "date"
     }
 
-    private lateinit var progressBar: ProgressBar
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var addressAdapter: AddressAdapter
-    private lateinit var searchButton: Button
     private val viewmodel = MainViewModel(Repository(NetworkService()))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        progressBar = findViewById<ProgressBar>(R.id.main_activity_progress_bar)
-        recyclerView = findViewById<RecyclerView>(R.id.main_activity_recyclerView)
-        searchButton = findViewById<Button>(R.id.main_activity_button)
-        listenToViewModel()
-
-        addressAdapter = AddressAdapter(onClick = { item ->
-            val bundle = Bundle()
-            bundle.putString(RATING, item.rating)
-            bundle.putString(TITLE, item.title)
-            bundle.putString(YEAR, item.year)
-            bundle.putString(DATE, item.date)
-            val intent = Intent(this, DetailActivity::class.java)
-            intent.putExtras(bundle)
-            startActivity(intent)
-        })
-        recyclerView.adapter = addressAdapter
-        respondToClicks()
-    }
-
-    private fun listenToViewModel() {
-        listenWithLifecycleAware<List<ResultEntity>> {
-            viewmodel.list.collect {
-                with(addressAdapter) {
-                    updateList(it)
-                    notifyDataSetChanged()
-                }
-            }
-        }
-        listenWithLifecycleAware<Boolean> {
-            viewmodel.showProgressBar.collect {
-                progressBar.visibility = if (it) View.VISIBLE else View.GONE
-            }
-        }
-        listenWithLifecycleAware<String> {
-            viewmodel.error.collect {
-                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
-            }
+        setContent {
+            buildMainContent()
         }
     }
 
@@ -97,47 +63,82 @@ class MainActivity : AppCompatActivity() {
 
     @Composable
     fun buildMainContent() {
-        return Column {
-            TextField(value = "Some movie name", onValueChange = {})
-
-
+        var list: List<ResultEntity>? by remember {
+            mutableStateOf(null)
         }
+        var showProgressBar: Boolean by remember {
+            mutableStateOf(false)
+        }
+        var searchTerm: String by remember {
+            mutableStateOf("")
+        }
+        return Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = Dp(8f)),
+            content = {
+                if (showProgressBar) Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                    content = {
+                        CircularProgressIndicator()
+                    })
+                TextField(
+                    modifier = Modifier.align(CenterHorizontally),
+                    value = searchTerm,
+                    onValueChange = {
+                        searchTerm = it
+                    })
+                Button(
+                    modifier = Modifier.align(CenterHorizontally),
+                    onClick = { if (searchTerm.isNotBlank()) viewmodel.fetchAddress(searchTerm) }) {
+                    Text(text = "FIND")
+                }
+                list?.let { buildListView(it) }
+                listenWithLifecycleAware<List<ResultEntity>> {
+                    viewmodel.list.collect { list = it }
+                }
+                listenWithLifecycleAware<Boolean> {
+                    viewmodel.showProgressBar.collect { showProgressBar = it }
+                }
+                listenWithLifecycleAware<String> {
+                    viewmodel.error.collect {
+                        Toast.makeText(this@MainActivity, it, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
     }
 
-    private fun respondToClicks() {
-        searchButton.setOnClickListener {
-            viewmodel.fetchAddress(
-                findViewById<TextView>(R.id.main_activity_editText).text.toString()
+    @Composable
+    fun buildListView(list: List<ResultEntity>) {
+        return LazyColumn(content = {
+            items(list) {
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = Dp(16f), vertical = Dp(16f))
+                        .clickable {
+                            val bundle = Bundle()
+                            bundle.putString(RATING, it.rating)
+                            bundle.putString(TITLE, it.title)
+                            bundle.putString(YEAR, it.year)
+                            bundle.putString(DATE, it.date)
+                            val intent = Intent(this@MainActivity, DetailActivity::class.java)
+                            intent.putExtras(bundle)
+                            startActivity(intent)
+                        }, text = "${it.year}: ${it.title}"
+                )
+            }
+        })
+    }
+
+    @Composable
+    @Preview
+    fun previewBuildListView() {
+        return buildListView(
+            list = listOf(
+                ResultEntity("dummy 1", "2", "1990", "1990"),
+                ResultEntity("dummy 2", "3", "2000", "2000")
             )
-        }
+        )
     }
-
-    class AddressAdapter(val onClick: (item: ResultEntity) -> Unit) :
-        RecyclerView.Adapter<AddressAdapter.Holder>() {
-        var mList: List<ResultEntity> = arrayListOf()
-
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.item, parent, false)
-            return Holder(view)
-        }
-
-        override fun onBindViewHolder(holder: Holder, position: Int) {
-            holder.itemView.findViewById<TextView>(R.id.item_textView).text =
-                "${mList[position].year}: ${mList[position].title}"
-            holder.itemView.setOnClickListener { onClick(mList[position]) }
-        }
-
-        override fun getItemCount(): Int {
-            return mList.size
-        }
-
-        fun updateList(list: List<ResultEntity>) {
-            mList = list
-        }
-
-        class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView!!)
-    }
-
-
 }
